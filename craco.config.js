@@ -12,6 +12,7 @@ module.exports = {
         path: require.resolve('path-browserify'),
         url: require.resolve('url'),
         process: require.resolve('process/browser.js'),
+        vm: require.resolve('vm-browserify'),
       };
 
       config.plugins.push(
@@ -21,7 +22,6 @@ module.exports = {
         })
       );
 
-      // Fix for ESM modules (like @reown/appkit)
       config.module.rules.push({
         test: /\.m?js/,
         resolve: {

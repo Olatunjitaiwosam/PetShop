@@ -8,7 +8,6 @@ import { Product } from '../components/Product';
 import { Modal } from '../components/Modal';
 import { CreateProduct } from '../components/CreateProduct';
 import { useAdmin } from '../hooks/useAdmin';
-import HeroSection from '../components/HeroSection';
 
 export function ProductPage() {
   const { loading, error, products, addProduct } = useProducts();
@@ -23,7 +22,6 @@ export function ProductPage() {
   return (
     <>
       <div id="products" className="container mx-auto max-w-5xl px-6 py-10">
-
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-medium text-gray-800">Available Pets</h2>
           {isAdmin && (

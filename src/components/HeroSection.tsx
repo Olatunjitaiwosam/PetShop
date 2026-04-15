@@ -37,7 +37,7 @@ const HeroSection: React.FC = () => {
           <div className="flex gap-3 flex-wrap items-center justify-center md:justify-start">
             <button
               onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-green-500 hover:bg-green-600 text-white px-7 py-3 rounded-full text-sm font-medium transition-colors"
+              className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors"
             >
               Shop Pets
             </button>

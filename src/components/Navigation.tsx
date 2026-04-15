@@ -39,7 +39,7 @@ export function Navigation() {
 
   return (
     <>
-      <nav className='h-[60px] fixed w-full flex z-10 items-center border-b border-white/10 px-5 bg-[#0f1f0f] text-white'>
+      <nav className='h-[60px] fixed w-full flex z-30 items-center border-b border-white/10 px-5 bg-[#0f1f0f] text-white'>
         <div className="w-full max-w-5xl mx-auto flex justify-between items-center">
           <span className='font-bold text-green-400'>🐾 PawChain</span>
 
@@ -70,9 +70,13 @@ export function Navigation() {
 
                 <button
                   onClick={signOut}
-                  className="text-xs text-white/50 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1 rounded-full transition-colors"
+                  className="flex items-center justify-center gap-2 py-2 rounded-lg border border-red-500/20 hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300 text-xs"
                 >
-                  Sign Out
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Sign out
                 </button>
               </>
             ) : (

@@ -21,7 +21,11 @@ const AuthModal: React.FC<Props> = ({ onClose }) => {
       else await signUpWithEmail(email, password);
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      if (err.message === 'CHECK_EMAIL') {
+        setError('Account created! Check your email to confirm before signing in.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }

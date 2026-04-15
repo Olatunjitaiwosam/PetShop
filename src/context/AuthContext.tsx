@@ -75,8 +75,15 @@ export const AuthState: React.FC<{ children: React.ReactNode }> = ({ children })
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin,
+      }
+    });
     if (error) throw error;
+    throw new Error('CHECK_EMAIL'); // signal to show confirmation message
   };
 
   const signOut = async () => {

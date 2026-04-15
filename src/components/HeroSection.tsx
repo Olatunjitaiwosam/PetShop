@@ -42,16 +42,6 @@ const HeroSection: React.FC = () => {
             >
               Shop Pets
             </button>
-            <WalletMultiButton
-              style={{
-                background: 'transparent',
-                border: '1.5px solid rgba(255,255,255,0.4)',
-                borderRadius: '9999px',
-                fontSize: '14px',
-                height: '46px',
-                padding: '0 28px',
-              }}
-            />
           </div>
         </div>
 
@@ -63,7 +53,7 @@ const HeroSection: React.FC = () => {
                 key={animal.name}
                 className="bg-white/10 border border-white/15 rounded-xl p-4 text-center backdrop-blur-sm"
               >
-                <span className="text-4xl block mb-2">{animal.icon}</span>
+                <span className="text-4xl md:text-7xl block mb-2">{animal.icon}</span>
                 <span className="text-white/90 text-sm font-medium block">{animal.name}</span>
                 <span className="text-green-400 text-xs block mt-1">{animal.price}</span>
               </div>

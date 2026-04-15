@@ -6,7 +6,6 @@ import { ErrorMesseage } from '../components/ErrorMesseage';
 import { Product } from '../components/Product';
 import { CreateProduct } from '../components/CreateProduct';
 import { useAdmin } from '../hooks/useAdmin';
-import HeroSection from '../components/HeroSection';
 
 export function ProductPage() {
   const { loading, error, products, addProduct } = useProducts();

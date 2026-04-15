@@ -1,39 +1,42 @@
 import { useEffect, useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/superbase';
 
 export interface Order {
   id: string;
-  pet_name: string;
-  pet_icon: string;
+  product_id: string;
+  product_title: string;
   amount_sol: number;
   tx_signature: string;
   status: string;
+  wallet_address: string;
   created_at: string;
 }
 
 export const useOrders = () => {
-  const { publicKey, connected } = useWallet();
+  const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!connected || !publicKey) { setOrders([]); return; }
+    if (!user) { setOrders([]); return; }
 
-    const fetchOrders = async () => {
+    const fetch = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('wallet_address', publicKey.toBase58())
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (!error && data) setOrders(data);
+      if (error) setError(error.message);
+      else setOrders(data || []);
       setLoading(false);
     };
 
-    fetchOrders();
-  }, [connected, publicKey]);
+    fetch();
+  }, [user]);
 
-  return { orders, loading };
+  return { orders, loading, error };
 };

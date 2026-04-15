@@ -1,17 +1,22 @@
-import {Route, Routes} from "react-router-dom";
-import {ProductPage} from "./pages/ProductPage";
-import {AboutPage} from "./pages/AboutPage";
-import {Navigation} from "./components/Navigation";
+import { Route, Routes } from "react-router-dom";
+import { Navigation } from "./components/Navigation";
+import { AboutPage } from "./pages/AboutPage";
+import ExhibitionPage from "./components/ExhibitionPage";
+import Footers from "./components/Footers";
+import { useWalletAuth } from './hooks/useWalletAuth';
 
-function App() {
-    return(
-        <>
-            <Navigation />
-            <Routes>
-                <Route path='/' element={<ProductPage/>}/>
-                <Route path='/about' element={<AboutPage/>}/>
-            </Routes>
-        </>
-    )
+export const App = () => {
+  useWalletAuth();
+  return (
+    <>
+      <Navigation />
+      <Routes>
+        <Route path='/' element={<ExhibitionPage/>} />
+        <Route path='/about' element={<AboutPage/>} />
+      </Routes>
+      <Footers/>
+    </>
+  );
 }
+
 export default App;

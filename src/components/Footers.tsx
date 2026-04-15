@@ -36,7 +36,6 @@ const Footers: React.FC = () => {
             <ul className="flex flex-col gap-2">
               <li><a href="https://github.com/EMMANUEL08161823021/PetShop" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-green-400 transition-colors">GitHub</a></li>
               <li><a href="https://explorer.solana.com/?cluster=devnet" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-green-400 transition-colors">Solana Explorer</a></li>
-              <li><a href="#" className="text-xs text-white/50 hover:text-green-400 transition-colors">How it works</a></li>
             </ul>
           </div>
         </div>

@@ -1,37 +1,42 @@
 import { useProducts } from '../hooks/products';
-import { useContext } from 'react';
-import { ModalContext } from '../context/ModalContext';
+import { useState } from 'react';
 import { IProduct } from '../models';
 import { Loader } from '../components/Loader';
 import { ErrorMesseage } from '../components/ErrorMesseage';
 import { Product } from '../components/Product';
-import { Modal } from '../components/Modal';
 import { CreateProduct } from '../components/CreateProduct';
 import { useAdmin } from '../hooks/useAdmin';
+import HeroSection from '../components/HeroSection';
 
 export function ProductPage() {
   const { loading, error, products, addProduct } = useProducts();
-  const { modal, open, close } = useContext(ModalContext);
-  const { isAdmin } = useAdmin();
+  const { isAdmin, checking } = useAdmin();
+  const [showModal, setShowModal] = useState(false);
 
-  const createHandler = (product: IProduct) => {
-    close();
-    addProduct(product);
+  const createHandler = async (product: IProduct) => {
+    await addProduct(product);
+    setShowModal(false);
   };
 
   return (
     <>
       <div id="products" className="container mx-auto max-w-5xl px-6 py-10">
+
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-medium text-gray-800">Available Pets</h2>
-          {isAdmin && (
-            <button
-              onClick={() => open()}
-              className="bg-green-500 hover:bg-green-600 text-white text-sm px-5 py-2 rounded-full transition-colors"
-            >
-              + Add Pet
-            </button>
-          )}
+          <div>
+            <h2 className="text-2xl font-medium text-gray-800">Available Pets</h2>
+            <p className="text-sm text-gray-400 mt-1">{products.length} pets listed</p>
+          </div>
+  
+            {!checking && isAdmin && (
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="bg-[#0f1f0f] hover:bg-[#1a3a1a] text-white text-sm px-5 py-2.5 rounded-full transition-colors flex items-center gap-2"
+                >
+                    <span className="text-green-400 text-lg leading-none">+</span>
+                    Add Pet
+                </button>
+            )}
         </div>
 
         {loading && <Loader />}
@@ -44,13 +49,14 @@ export function ProductPage() {
         </div>
 
         {!loading && products.length === 0 && (
-          <div className="text-center py-20 text-gray-400">
-            <p className="text-4xl mb-3">🐾</p>
-            <p className="text-sm">No pets available yet.</p>
+          <div className="text-center py-24 text-gray-400">
+            <p className="text-5xl mb-4">🐾</p>
+            <p className="text-base font-medium text-gray-500">No pets listed yet</p>
+            <p className="text-sm mt-1 mb-6">Check back soon or add the first one</p>
             {isAdmin && (
               <button
-                onClick={() => open()}
-                className="mt-4 bg-green-500 text-white text-sm px-5 py-2 rounded-full"
+                onClick={() => setShowModal(true)}
+                className="bg-green-500 text-white text-sm px-6 py-2.5 rounded-full"
               >
                 Add your first pet
               </button>
@@ -60,10 +66,11 @@ export function ProductPage() {
 
       </div>
 
-      {modal && (
-        <Modal title="Add New Pet" onClose={() => close()}>
-          <CreateProduct onCreate={createHandler} />
-        </Modal>
+      {showModal && (
+        <CreateProduct
+          onCreate={createHandler}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </>
   );

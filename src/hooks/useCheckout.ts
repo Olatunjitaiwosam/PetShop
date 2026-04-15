@@ -1,62 +1,86 @@
 import { useState } from 'react';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { SystemProgram, Transaction, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { useConnection } from '@solana/wallet-adapter-react';
+import {
+  SystemProgram, Transaction, PublicKey,
+  LAMPORTS_PER_SOL, Keypair, sendAndConfirmTransaction
+} from '@solana/web3.js';
 import { supabase } from '../lib/superbase';
-
-const STORE_WALLET = new PublicKey(process.env.REACT_APP_STORE_WALLET!);
-
-interface Pet {
-  name: string;
-  icon: string;
-  price: number; // in SOL
-}
+import { useAuth } from '../context/AuthContext';
+import { IProduct } from '../models';
+import { decryptKey } from '../lib/walletUtils';
+import bs58 from 'bs58';
 
 export const useCheckout = () => {
-  const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
+  const { user, walletAddress } = useAuth();
   const [loading, setLoading] = useState(false);
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const checkout = async (pet: Pet) => {
-    if (!publicKey) {
-      setError('Please connect your wallet first.');
-      return;
+  const buyNow = async (product: IProduct) => {
+    if (!user) { setError('Please sign in first.'); return; }
+    console.log('Store wallet:', process.env.REACT_APP_STORE_WALLET);
+
+
+    const storeWalletAddress = process.env.REACT_APP_STORE_WALLET;
+    if (!storeWalletAddress) { setError('Store wallet not configured.'); return; }
+
+    let STORE_WALLET: PublicKey;
+    try {
+      STORE_WALLET = new PublicKey(storeWalletAddress);
+    } catch {
+      setError('Invalid store wallet address.'); return;
     }
 
     setLoading(true);
     setError(null);
+    setSuccess(false);
 
     try {
-      // 1. Build transaction
+      // 1. Fetch encrypted private key from Supabase
+      const { data: walletData, error: walletError } = await supabase
+        .from('wallets')
+        .select('encrypted_private_key, wallet_address')
+        .eq('user_id', user.id)
+        .single();
+
+      if (walletError || !walletData) throw new Error('Wallet not found.');
+
+      // 2. Decrypt private key
+      const privateKey = decryptKey(walletData.encrypted_private_key, user.id);
+      const secretKey = bs58.decode(privateKey);
+      const keypair = Keypair.fromSecretKey(secretKey);
+
+      // 3. Build transaction
       const tx = new Transaction().add(
         SystemProgram.transfer({
-          fromPubkey: publicKey,
+          fromPubkey: keypair.publicKey,
           toPubkey: STORE_WALLET,
-          lamports: pet.price * LAMPORTS_PER_SOL,
+          lamports: Math.round(product.price * LAMPORTS_PER_SOL),
         })
       );
 
-      // 2. Send to Solana Devnet
-      const sig = await sendTransaction(tx, connection);
-
-      // 3. Wait for confirmation
-      await connection.confirmTransaction(sig, 'confirmed');
+      // 4. Sign and send using custodial keypair
+      const sig = await sendAndConfirmTransaction(connection, tx, [keypair]);
       setTxSignature(sig);
 
-      // 4. Save order to Supabase
+      // 5. Save order to Supabase
       const { error: dbError } = await supabase.from('orders').insert({
-        wallet_address: publicKey.toBase58(),
-        pet_name: pet.name,
-        pet_icon: pet.icon,
-        amount_sol: pet.price,
+        user_id: user.id,
+        wallet_address: walletData.wallet_address,
+        product_id: product.id,
+        product_title: product.title,
+        amount_sol: product.price,
         tx_signature: sig,
         status: 'confirmed',
       });
 
       if (dbError) throw new Error(dbError.message);
 
+      setSuccess(true);
       return sig;
+
     } catch (err: any) {
       setError(err.message || 'Transaction failed.');
     } finally {
@@ -64,5 +88,11 @@ export const useCheckout = () => {
     }
   };
 
-  return { checkout, loading, txSignature, error };
+  const reset = () => {
+    setTxSignature(null);
+    setError(null);
+    setSuccess(false);
+  };
+
+  return { buyNow, loading, txSignature, error, success, reset };
 };

@@ -88,7 +88,6 @@ export function Navigation() {
 
             {/* Desktop links */}
             <div className="hidden md:flex items-center gap-4 mr-2">
-              <Link to="/" className="text-xs text-white/60 hover:text-white transition-colors">Shop</Link>
               {user && (
                 <Link to="/orders" className="text-xs text-white/60 hover:text-white transition-colors">My Orders</Link>
               )}

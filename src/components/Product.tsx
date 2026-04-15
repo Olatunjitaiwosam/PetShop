@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IProduct } from '../models';
 import { useCheckout } from '../hooks/useCheckout';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductProps {
   product: IProduct;
@@ -18,10 +19,18 @@ export function Product({ product }: ProductProps) {
   const { user } = useAuth();
   const icon = categoryIcons[product.category] || '🐾';
 
+  const navigate = useNavigate();
+
   const handleClose = () => {
     setShowModal(false);
     reset();
   };
+    const handleSuccess = () => {
+        setShowModal(false);
+        reset();
+        navigate('/orders');
+    };
+
 
   return (
     <>
@@ -115,11 +124,11 @@ export function Product({ product }: ProductProps) {
                     View transaction on Solana Explorer ↗
                   </a>
                   <button
-                    onClick={handleClose}
+                    onClick={handleSuccess}
                     className="w-full bg-[#0f1f0f] text-white rounded-full py-3 text-sm font-medium"
-                  >
-                    Done
-                  </button>
+                    >
+                    View My Orders →
+                    </button>
                 </div>
               ) : (
                 <>

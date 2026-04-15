@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 export function Navigation() {
   const { user, walletAddress, signOut } = useAuth();
+  const [copied, setCopied] = useState(false);
   const { connection } = useConnection();
   const [showModal, setShowModal] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
@@ -68,7 +69,6 @@ export function Navigation() {
 
             {/* Desktop links */}
             <div className="hidden md:flex items-center gap-4 mr-2">
-              <Link to="/" className="text-xs text-white/60 hover:text-white transition-colors">Shop</Link>
               {user && (
                 <Link to="/orders" className="text-xs text-white/60 hover:text-white transition-colors">My Orders</Link>
               )}
@@ -81,8 +81,28 @@ export function Navigation() {
                     ◎ {balance.toFixed(3)} SOL
                   </span>
                 )}
-                <span className="text-xs text-white/50 bg-white/10 px-3 py-1 rounded-full font-mono hidden sm:block">
+                <span
+                  onClick={() => {
+                    if (walletAddress) {
+                      navigator.clipboard.writeText(walletAddress);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }
+                  }}
+                  className="text-xs text-white/50 bg-white/10 px-3 py-1 rounded-full font-mono hidden sm:flex items-center gap-1.5 cursor-pointer hover:bg-white/20 transition-colors"
+                  title="Copy wallet address"
+                >
                   {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
+                  {copied ? (
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <path d="M20 6L9 17l-5-5" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  )}
                 </span>
                 <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xs font-medium text-white">
                   {user.email ? getInitials(user.email) : '??'}
@@ -135,7 +155,7 @@ export function Navigation() {
           {/* Drawer content */}
           <div className="px-6 flex flex-col gap-1">
 
-            {user && (
+            {user ? (
               <div className="flex items-center gap-3 pb-4 mb-2 border-b border-white/10">
                 <div className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-sm font-medium text-white">
                   {user.email ? getInitials(user.email) : '??'}
@@ -152,15 +172,31 @@ export function Navigation() {
                   </span>
                 )}
               </div>
+            ) : (
+              <div className="flex items-center gap-3 pb-4 mb-2 border-b border-white/10">
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-lg">
+                  🔒
+                </div>
+                <div>
+                  <p className="text-white text-sm font-medium">Not signed in</p>
+                  <p className="text-white/40 text-xs">Sign in to access your wallet</p>
+                </div>
+                <button
+                  onClick={() => { setShowModal(true); setShowDrawer(false); }}
+                  className="ml-auto bg-green-500 hover:bg-green-600 text-white text-sm px-5 py-2 rounded-full transition-colors"
+                >
+                  Sign In
+                </button>
+              </div>
             )}
 
-            <Link
+            {/* <Link
               to="/"
               onClick={() => setShowDrawer(false)}
               className="flex items-center gap-3 text-white/70 hover:text-white py-2.5 text-sm transition-colors"
             >
               🐾 Shop Pets
-            </Link>
+            </Link> */}
 
             {user && (
               <Link

@@ -12,7 +12,7 @@ import bs58 from 'bs58';
 
 export const useCheckout = () => {
   const { connection } = useConnection();
-  const { user, walletAddress } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

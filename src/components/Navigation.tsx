@@ -190,13 +190,13 @@ export function Navigation() {
               </div>
             )}
 
-            {/* <Link
+            <Link
               to="/"
               onClick={() => setShowDrawer(false)}
               className="flex items-center gap-3 text-white/70 hover:text-white py-2.5 text-sm transition-colors"
             >
-              🐾 Shop Pets
-            </Link> */}
+              🐾 Home
+            </Link>
 
             {user && (
               <Link

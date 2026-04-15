@@ -33,9 +33,26 @@ const AuthModal: React.FC<Props> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
+    // Click outside to close
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+      onClick={onClose}
+    >
+      {/* Stop click from bubbling to backdrop */}
+      <div
+        className="relative bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl"
+        onClick={e => e.stopPropagation()}
+      >
 
+        {/* X button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+        >
+          ✕
+        </button>
+
+        {/* Header */}
         <h2 className="text-xl font-medium text-gray-900 mb-1">
           {mode === 'signin' ? 'Welcome back' : 'Create account'}
         </h2>
@@ -79,7 +96,7 @@ const AuthModal: React.FC<Props> = ({ onClose }) => {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full bg-green-500 hover:bg-green-600 text-white rounded-full py-3 text-sm font-medium transition-colors"
+          className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-60 text-white rounded-full py-3 text-sm font-medium transition-colors"
         >
           {loading ? 'Please wait...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
         </button>
@@ -94,7 +111,6 @@ const AuthModal: React.FC<Props> = ({ onClose }) => {
           </button>
         </p>
 
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
       </div>
     </div>
   );

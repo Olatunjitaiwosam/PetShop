@@ -1,33 +1,36 @@
-import {useEffect, useState} from "react";
-import {IProduct} from "../models";
-import axios, {AxiosError} from "axios";
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/superbase';
+import { IProduct } from '../models';
 
-export function useProducts() {
-    const [products, setProducts] = useState<IProduct[]>([])
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
+export const useProducts = () => {
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-    function addProduct(product: IProduct) {
-        setProducts(prev => [...prev, product])
-    }
+  const fetchProducts = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    async function fetchProducts() {
-        try {
-            setError('')
-            setLoading(true)
-            const responce = await axios.get<IProduct[]>('https://fakestoreapi.com/products?limit=5')
-            setProducts(responce.data)
-            setLoading(false)
-        } catch (e) {
-            const error = e as AxiosError
-            setLoading(false)
-            setError(error.message)
-        }
-    }
+    if (error) setError(error.message);
+    else setProducts(data || []);
+    setLoading(false);
+  };
 
-    useEffect(() => {
-        fetchProducts()
-    }, [])
+  useEffect(() => { fetchProducts(); }, []);
 
-    return { products, error, loading, addProduct}
-}
+  const addProduct = async (product: IProduct) => {
+    const { data, error } = await supabase
+      .from('products')
+      .insert(product)
+      .select()
+      .single();
+
+    if (error) setError(error.message);
+    else setProducts(prev => [data, ...prev]);
+  };
+
+  return { loading, error, products, addProduct };
+};

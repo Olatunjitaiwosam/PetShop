@@ -42,6 +42,25 @@ export function Navigation() {
     return () => document.removeEventListener('click', handler);
   }, [showDrawer]);
 
+  const copyWalletAddress = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!walletAddress) return;
+    navigator.clipboard.writeText(walletAddress).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // Fallback for non-HTTPS
+      const el = document.createElement('textarea');
+      el.value = walletAddress;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <>
       <nav className='h-[60px] fixed w-full flex z-30 items-center border-b border-white/10 px-5 bg-[#0f1f0f] text-white'>
@@ -69,6 +88,7 @@ export function Navigation() {
 
             {/* Desktop links */}
             <div className="hidden md:flex items-center gap-4 mr-2">
+              <Link to="/" className="text-xs text-white/60 hover:text-white transition-colors">Shop</Link>
               {user && (
                 <Link to="/orders" className="text-xs text-white/60 hover:text-white transition-colors">My Orders</Link>
               )}
@@ -81,15 +101,12 @@ export function Navigation() {
                     ◎ {balance.toFixed(3)} SOL
                   </span>
                 )}
-                <span
-                  onClick={() => {
-                    if (walletAddress) {
-                      navigator.clipboard.writeText(walletAddress);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }
-                  }}
-                  className="text-xs text-white/50 bg-white/10 px-3 py-1 rounded-full font-mono hidden sm:flex items-center gap-1.5 cursor-pointer hover:bg-white/20 transition-colors"
+
+                {/* Copy wallet address button */}
+                <button
+                  type="button"
+                  onClick={copyWalletAddress}
+                  className="text-sm text-white/50 bg-white/10 px-3 py-1 rounded-full font-mono hidden sm:flex items-center gap-1.5 cursor-pointer hover:bg-white/20 transition-colors"
                   title="Copy wallet address"
                 >
                   {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
@@ -103,13 +120,16 @@ export function Navigation() {
                       <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2"/>
                     </svg>
                   )}
-                </span>
+                </button>
+
                 <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xs font-medium text-white">
                   {user.email ? getInitials(user.email) : '??'}
                 </div>
+
                 <span className="text-xs text-white/50 hidden md:block">
                   {user.email?.split('@')[0]}
                 </span>
+
                 <button
                   onClick={signOut}
                   className="hidden md:flex items-center gap-2 py-2 px-3 rounded-lg border border-red-500/20 hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300 text-xs"
@@ -124,7 +144,7 @@ export function Navigation() {
             ) : (
               <button
                 onClick={() => setShowModal(true)}
-                className="bg-green-500 hover:bg-green-600 text-white text-sm px-5 py-2 rounded-full transition-colors"
+                className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors"
               >
                 Sign In
               </button>
@@ -162,9 +182,23 @@ export function Navigation() {
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium">{user.email?.split('@')[0]}</p>
-                  <p className="text-white/40 text-xs font-mono">
+                  <button
+                    type="button"
+                    onClick={copyWalletAddress}
+                    className="text-white/40 text-xs font-mono flex items-center gap-1 hover:text-white/70 transition-colors"
+                  >
                     {walletAddress?.slice(0, 8)}...{walletAddress?.slice(-4)}
-                  </p>
+                    {copied ? (
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17l-5-5" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ) : (
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+                        <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                    )}
+                  </button>
                 </div>
                 {balance !== null && (
                   <span className="ml-auto text-xs text-green-400 bg-green-400/10 border border-green-400/20 px-2.5 py-1 rounded-full">
@@ -183,7 +217,7 @@ export function Navigation() {
                 </div>
                 <button
                   onClick={() => { setShowModal(true); setShowDrawer(false); }}
-                  className="ml-auto bg-green-500 hover:bg-green-600 text-white text-sm px-5 py-2 rounded-full transition-colors"
+                  className="ml-auto bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors"
                 >
                   Sign In
                 </button>

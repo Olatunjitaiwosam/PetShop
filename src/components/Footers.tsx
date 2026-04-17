@@ -34,7 +34,7 @@ const Footers: React.FC = () => {
           <div>
             <p className="text-xs font-medium text-white/30 uppercase tracking-widest mb-3">Project</p>
             <ul className="flex flex-col gap-2">
-              <li><a href="https://github.com/EMMANUEL08161823021/PetShop" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-green-400 transition-colors">GitHub</a></li>
+              <li><a href="https://github.com/Olatunjitaiwosam/PetShop" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-green-400 transition-colors">GitHub</a></li>
               <li><a href="https://explorer.solana.com/?cluster=devnet" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-green-400 transition-colors">Solana Explorer</a></li>
             </ul>
           </div>
